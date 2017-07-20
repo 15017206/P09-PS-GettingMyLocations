@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
@@ -22,8 +23,13 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
@@ -34,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     String folderLocation;
     Button btnStartDetect, btnStopDetect, btnCheckRecords;
     TextView tv1;
+    private GoogleMap map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +51,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         btnStopDetect = (Button) findViewById(R.id.button2);
         btnCheckRecords = (Button) findViewById(R.id.button3);
         tv1 = (TextView) findViewById(R.id.tv1);
+
+        FragmentManager fm = getSupportFragmentManager();
+        SupportMapFragment mapFragment = (SupportMapFragment)
+                fm.findFragmentById(R.id.map);
+
+        mapFragment.getMapAsync(new OnMapReadyCallback(){
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                map = googleMap;
+
+                int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+                if (permissionCheck == PermissionChecker.PERMISSION_GRANTED) {
+                    map.setMyLocationEnabled(true);
+                } else {
+                    Log.e("GMap - Permission", "GPS access has not been granted");
+                }
+
+            }
+        });
+
 
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
 //        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
@@ -75,9 +104,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         btnCheckRecords.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                folderLocation = Environment.getExternalStorageDirectory().getAbsolutePath() + "/P09";
+                File targetFile = new File(folderLocation, "data.txt");
 
-
-
+                if (targetFile.exists() == true) {
+                    String data = "";
+                    try {
+                        FileReader reader = new FileReader(targetFile);
+                        BufferedReader br = new BufferedReader(reader);
+                        String line = br.readLine();
+                        while (line != null) {
+                            data += line + "\n";
+                            line = br.readLine();
+                        }
+                        br.close();
+                        reader.close();
+                    } catch (Exception e) {
+                        Toast.makeText(MainActivity.this, "Failed to read!",
+                                Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
+                    }
+                    tv1.setText("Tracked coordinates: \n" + data);
+                }
 
             }
         });

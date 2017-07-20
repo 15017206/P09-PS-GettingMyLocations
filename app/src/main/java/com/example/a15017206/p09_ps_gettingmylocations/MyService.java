@@ -136,7 +136,7 @@ mGoogleApiClient.connect();
 
     @Override
     public void onLocationChanged(Location location) {
-        Toast.makeText(this, "Lat : " + location.getLatitude() + " Lng : " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Lat : " + location.getLatitude() + " Lng : " + location.getLongitude(), Toast.LENGTH_SHORT).show();
         Log.i(TAG, "onLocationChanged: " + location);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -148,13 +148,15 @@ mGoogleApiClient.connect();
                 Toast.makeText(this, "Location not Detected", Toast.LENGTH_SHORT).show();
             }
 
-            LocationRequest mLocationRequest = LocationRequest.create();
-            mLocationRequest.setPriority(LocationRequest
-                    .PRIORITY_BALANCED_POWER_ACCURACY);
-            mLocationRequest.setInterval(1000);
-            mLocationRequest.setFastestInterval(500);
-            mLocationRequest.setSmallestDisplacement(100);
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+//            LocationRequest mLocationRequest = LocationRequest.create();
+//            mLocationRequest.setPriority(LocationRequest
+//                    .PRIORITY_BALANCED_POWER_ACCURACY);
+//            mLocationRequest.setInterval(1000);
+//            mLocationRequest.setFastestInterval(500);
+//            mLocationRequest.setSmallestDisplacement(100);
+//            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
+//            Toast.makeText(this, mLocationRequest.toString(), Toast.LENGTH_SHORT).show();
 
             folderLocation = Environment.getExternalStorageDirectory().getAbsolutePath() + "/P09";
             File folder = new File(folderLocation);
@@ -167,9 +169,9 @@ mGoogleApiClient.connect();
 
             File targetFile = new File(folderLocation, "data.txt");
             try {
-                FileWriter writer = new FileWriter(targetFile, false);
+                FileWriter writer = new FileWriter(targetFile, true);
                 Log.i(TAG, String.valueOf(mLocation.getLatitude() + mLocation.getLongitude()));
-                writer.write(mLocation.getLatitude() + mLocation.getLongitude() +"\n");
+                writer.write(mLocation.getLatitude() + " " + mLocation.getLongitude() +"\n");
                 writer.flush();
                 writer.close();
             } catch (Exception e) {
