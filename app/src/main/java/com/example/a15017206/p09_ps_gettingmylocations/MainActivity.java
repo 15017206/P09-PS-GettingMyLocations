@@ -31,6 +31,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
@@ -109,22 +110,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 if (targetFile.exists() == true) {
                     String data = "";
+                    ArrayList<String> data2 = new ArrayList<String>();
+
                     try {
                         FileReader reader = new FileReader(targetFile);
                         BufferedReader br = new BufferedReader(reader);
                         String line = br.readLine();
                         while (line != null) {
                             data += line + "\n";
+                            data2.add(line+"");
                             line = br.readLine();
                         }
                         br.close();
                         reader.close();
                     } catch (Exception e) {
-                        Toast.makeText(MainActivity.this, "Failed to read!",
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, "Failed to read!", Toast.LENGTH_LONG).show();
                         e.printStackTrace();
                     }
+                    Log.i(TAG, "onClick: " + data2.toString());
                     tv1.setText("Tracked coordinates: \n" + data);
+
+                    Intent i = new Intent(getApplicationContext(), ListviewActivity.class);
+                    i.putExtra("", data2);
+                    startActivity(i);
                 }
 
             }

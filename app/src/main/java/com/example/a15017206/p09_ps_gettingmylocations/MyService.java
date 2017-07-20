@@ -171,7 +171,7 @@ mGoogleApiClient.connect();
             try {
                 FileWriter writer = new FileWriter(targetFile, true);
                 Log.i(TAG, String.valueOf(mLocation.getLatitude() + mLocation.getLongitude()));
-                writer.write(mLocation.getLatitude() + " " + mLocation.getLongitude() +"\n");
+                writer.write(mLocation.getLatitude() + ", " + mLocation.getLongitude() +"\n");
                 writer.flush();
                 writer.close();
             } catch (Exception e) {
